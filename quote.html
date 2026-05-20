@@ -9,9 +9,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
   <style>
-    /* ================================================================
-       YOSHIISTORE QUOTE GENERATOR — STYLESHEET
-    ================================================================ */
     :root {
       --bg:       #0c0c0c;
       --bg-card:  #141414;
@@ -39,7 +36,6 @@
       min-height: 100vh;
     }
 
-    /* Animated yellow top bar */
     body::before {
       content: '';
       display: block;
@@ -53,14 +49,12 @@
     }
     @keyframes shift { to { background-position: 300%; } }
 
-    /* ── Page wrapper ── */
     .page {
       max-width: 1140px;
       margin: 0 auto;
       padding: 44px 20px 64px;
     }
 
-    /* ── Header ── */
     .hd { text-align: center; margin-bottom: 44px; }
     .hd-logo {
       font-family: var(--fh);
@@ -83,7 +77,6 @@
       margin-top: 10px;
     }
 
-    /* ── Two-column layout ── */
     .layout {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -95,7 +88,6 @@
     }
     .col > * + * { margin-top: 20px; }
 
-    /* ── Card ── */
     .card {
       background: var(--bg-card);
       border: 1px solid var(--border);
@@ -114,14 +106,8 @@
       align-items: center;
       gap: 10px;
     }
-    .ct::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
+    .ct::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-    /* ── Form fields ── */
     .field { margin-bottom: 14px; }
     .field:last-child { margin-bottom: 0; }
 
@@ -169,7 +155,6 @@
     }
     .field-row .field { margin-bottom: 0; }
 
-    /* ── Toggle / rush fee row ── */
     .tog-row {
       display: flex;
       align-items: center;
@@ -205,13 +190,11 @@
       border-radius: 50%;
       transition: transform .2s, background .2s;
     }
-    .sw input:checked ~ .trk              { background: var(--hi); }
-    .sw input:checked ~ .trk::before     { transform: translateX(20px); background: #111; }
+    .sw input:checked ~ .trk { background: var(--hi); }
+    .sw input:checked ~ .trk::before { transform: translateX(20px); background: #111; }
 
-    /* ── Divider ── */
     hr { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
 
-    /* ── Live totals ── */
     .totals { display: grid; gap: 6px; }
     .t-row {
       display: flex;
@@ -230,7 +213,6 @@
       color: var(--hi);
     }
 
-    /* ── Quote output box ── */
     .qout {
       font-family: 'Courier New', Consolas, monospace;
       font-size: .79rem;
@@ -247,7 +229,6 @@
     }
     .qout.live { border-color: rgba(245,216,0,.3); }
 
-    /* ── Buttons ── */
     .btn {
       display: flex;
       align-items: center;
@@ -279,7 +260,6 @@
     }
     .copy-msg.show { opacity: 1; }
 
-    /* ── Footer ── */
     footer {
       text-align: center;
       color: var(--muted);
@@ -301,7 +281,7 @@
 
   <div class="layout">
 
-    <!-- ═══ LEFT COLUMN: Inputs ═══ -->
+    <!-- LEFT: Inputs -->
     <div class="col">
 
       <div class="card">
@@ -371,13 +351,13 @@
         </div>
       </div>
 
-    </div><!-- /col -->
+    </div>
 
-    <!-- ═══ RIGHT COLUMN: Quote Preview ═══ -->
+    <!-- RIGHT: Preview -->
     <div class="card">
       <div class="ct">QUOTE PREVIEW</div>
 
-      <div class="qout" id="qout" role="region" aria-live="polite" aria-label="Generated quote text">Fill in the customer info and costs on the left to generate your quote.</div>
+      <div class="qout" id="qout" role="region" aria-live="polite">Fill in the customer info and costs on the left to generate your quote.</div>
 
       <hr />
 
@@ -388,29 +368,192 @@
       <p class="copy-msg" id="copy-msg">Copied! Ready to send to your customer.</p>
     </div>
 
-  </div><!-- /layout -->
+  </div>
 
   <footer>Yoshiistore &mdash; Private Internal Tool &mdash; Not for Distribution</footer>
 </div>
 
 <script>
   /* ================================================================
-     YOSHIISTORE QUOTE GENERATOR — CONFIGURATION
-     ──────────────────────────────────────────────────────────────
-     Edit these four constants whenever your rates change.
-     No other code needs to be touched.
+     YOSHIISTORE QUOTE GENERATOR
+     ── CONFIGURATION ─────────────────────────────────────────────
+     These are the only four values you should ever need to change.
   ================================================================ */
 
   const HOURLY_LABOR_RATE = 65;    // $ per hour
-  const SALES_TAX_RATE    = 0.10;  // Illinois sales tax — applied to parts cost only
+  const SALES_TAX_RATE    = 0.10;  // 10% Illinois — on parts cost only
   const RUSH_FEE_FLAT     = 40;    // $ flat minimum rush fee
-  const RUSH_FEE_PERCENT  = 0.20;  // 20% of (parts + labor) — used if greater than flat fee
+  const RUSH_FEE_PERCENT  = 0.20;  // 20% of (parts + labor) — used if greater than flat
 
   /* ──────────────────────────────────────────────────────────────
      No need to edit below this line.
   ──────────────────────────────────────────────────────────────── */
 
-  const fmt = n => '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  const el  = id => document.getElementById(id);
+  function fmt(n) {
+    return '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
 
-  const SVG_COPY = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.
+  function el(id) {
+    return document.getElementById(id);
+  }
+
+  function calc() {
+    var parts = parseFloat(el('n-parts').value) || 0;
+    var hours = parseFloat(el('n-hours').value) || 0;
+    var labor = hours * HOURLY_LABOR_RATE;
+    var sub   = parts + labor;
+    var rush  = el('n-rush').checked ? Math.max(RUSH_FEE_FLAT, sub * RUSH_FEE_PERCENT) : 0;
+    var tax   = parts * SALES_TAX_RATE;
+    var total = sub + rush + tax;
+    return { parts: parts, hours: hours, labor: labor, sub: sub, rush: rush, tax: tax, total: total };
+  }
+
+  function pad(label, value) {
+    var width = 28;
+    while (label.length < width) label = label + ' ';
+    return label + value;
+  }
+
+  function buildQuote(c) {
+    var name   = el('n-name').value.trim()  || 'there';
+    var model  = el('n-model').value.trim() || '(not specified)';
+    var issue  = el('n-issue').value.trim() || '(no description provided)';
+    var cat    = el('n-cat').value          || '(category not selected)';
+    var isRush = el('n-rush').checked;
+
+    var today = new Date().toLocaleDateString('en-US', {
+      year: 'numeric', month: 'long', day: 'numeric'
+    });
+
+    var S1 = '----------------------------------------';
+    var S2 = '========================================';
+    var taxPct = Math.round(SALES_TAX_RATE * 100);
+
+    var lines = [];
+    lines.push('Hi ' + name + ',');
+    lines.push('');
+    lines.push('Thanks for reaching out to Yoshiistore!');
+    lines.push("Here's your estimated repair quote:");
+    lines.push('');
+    lines.push(S1);
+    lines.push('  Date:           ' + today);
+    lines.push('  Device / Tool:  ' + model);
+    lines.push('  Service Type:   ' + cat);
+    lines.push(S1);
+    lines.push('  Issue Reported:');
+    lines.push('  "' + issue + '"');
+    lines.push('');
+    lines.push(S2);
+    lines.push('  COST BREAKDOWN');
+    lines.push(S2);
+    lines.push('  ' + pad('Parts:', fmt(c.parts)));
+    lines.push('  ' + pad('Labor (' + c.hours + 'h @ $' + HOURLY_LABOR_RATE + '/hr):', fmt(c.labor)));
+
+    if (isRush) {
+      var rushLabel = (c.rush === RUSH_FEE_FLAT) ? 'Rush Fee (flat min):' : 'Rush Fee (20% of sub):';
+      lines.push('  ' + pad(rushLabel, fmt(c.rush)));
+    }
+
+    lines.push('  ' + pad('Tax (IL ' + taxPct + '%, parts only):', fmt(c.tax)));
+    lines.push(S2);
+    lines.push('  ' + pad('TOTAL ESTIMATE:', fmt(c.total)));
+    lines.push(S2);
+    lines.push('');
+    lines.push('This is an estimate. Final cost may vary slightly');
+    lines.push('based on parts availability or repair complexity.');
+    lines.push("We'll always contact you before any additional work");
+    lines.push('is performed -- no surprises.');
+    lines.push('');
+
+    if (isRush) {
+      lines.push('*** Rush service applied -- your repair is prioritized! ***');
+      lines.push('');
+    }
+
+    lines.push('To confirm or ask questions, just reply to this message.');
+    lines.push('We appreciate your business!');
+    lines.push('');
+    lines.push('-- The Yoshiistore Team');
+
+    return lines.join('\n');
+  }
+
+  function update() {
+    var c = calc();
+
+    el('tt-parts').textContent = fmt(c.parts);
+    el('tt-labor').textContent = fmt(c.labor);
+    el('tt-tax').textContent   = fmt(c.tax);
+    el('tt-total').textContent = fmt(c.total);
+
+    var isRush = el('n-rush').checked;
+    if (isRush) {
+      el('tt-rush-row').style.display = 'flex';
+      el('tt-rush').textContent = fmt(c.rush);
+      var which = (c.rush === RUSH_FEE_FLAT) ? 'flat minimum' : '20% of subtotal';
+      el('rush-sub').textContent = 'Applied: ' + fmt(c.rush) + ' (' + which + ')';
+      el('rush-box').classList.add('on');
+    } else {
+      el('tt-rush-row').style.display = 'none';
+      el('rush-sub').textContent = 'Adds $' + RUSH_FEE_FLAT + ' or ' + Math.round(RUSH_FEE_PERCENT * 100) + '% of subtotal -- whichever is greater';
+      el('rush-box').classList.remove('on');
+    }
+
+    var hasData = el('n-name').value || el('n-model').value ||
+                  el('n-parts').value || el('n-hours').value ||
+                  el('n-issue').value || el('n-cat').value;
+
+    var qout = el('qout');
+    if (hasData) {
+      qout.textContent = buildQuote(c);
+      qout.classList.add('live');
+    } else {
+      qout.textContent = 'Fill in the customer info and costs on the left to generate your quote.';
+      qout.classList.remove('live');
+    }
+  }
+
+  function copyQuote() {
+    var text = el('qout').textContent;
+    if (!text || text.indexOf('Fill in') === 0) return;
+
+    var btn = el('copy-btn');
+    var msg = el('copy-msg');
+
+    var svgCopy = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+    var svgCheck = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+
+    navigator.clipboard.writeText(text).then(function() {
+      btn.innerHTML = svgCheck + ' COPIED!';
+      btn.classList.remove('btn-y');
+      btn.classList.add('btn-g');
+      msg.classList.add('show');
+
+      setTimeout(function() {
+        btn.innerHTML = svgCopy + ' COPY TO CLIPBOARD';
+        btn.classList.remove('btn-g');
+        btn.classList.add('btn-y');
+        msg.classList.remove('show');
+      }, 2500);
+
+    }).catch(function() {
+      var sel = window.getSelection();
+      var range = document.createRange();
+      range.selectNodeContents(el('qout'));
+      sel.removeAllRanges();
+      sel.addRange(range);
+      try { document.execCommand('copy'); } catch(e) {}
+      sel.removeAllRanges();
+    });
+  }
+
+  var inputs = ['n-name', 'n-model', 'n-issue', 'n-cat', 'n-parts', 'n-hours', 'n-rush'];
+  for (var i = 0; i < inputs.length; i++) {
+    el(inputs[i]).addEventListener('input', update);
+    el(inputs[i]).addEventListener('change', update);
+  }
+
+  update();
+</script>
+</body>
+</html>
