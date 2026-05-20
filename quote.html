@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quote Generator — Yoshiistore</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ================================================================
+       YOSHIISTORE QUOTE GENERATOR — STYLESHEET
+    ================================================================ */
+    :root {
+      --bg:       #0c0c0c;
+      --bg-card:  #141414;
+      --bg-inp:   #1c1c1c;
+      --border:   #252525;
+      --hi:       #f5d800;
+      --hi-light: #fce84d;
+      --text:     #eaeaea;
+      --muted:    #777;
+      --green:    #22c55e;
+      --fh:       'Bebas Neue', sans-serif;
+      --fb:       'DM Sans', sans-serif;
+      --r:        8px;
+      --r-lg:     14px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--fb);
+      background-color: var(--bg);
+      background-image: radial-gradient(rgba(255,255,255,.038) 1px, transparent 1px);
+      background-size: 22px 22px;
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* Animated yellow top bar */
+    body::before {
+      content: '';
+      display: block;
+      position: fixed;
+      inset: 0 0 auto 0;
+      height: 3px;
+      background: linear-gradient(90deg, #b89e00, var(--hi), #fff176, var(--hi), #b89e00);
+      background-size: 300%;
+      animation: shift 5s linear infinite;
+      z-index: 999;
+    }
+    @keyframes shift { to { background-position: 300%; } }
+
+    /* ── Page wrapper ── */
+    .page {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 44px 20px 64px;
+    }
+
+    /* ── Header ── */
+    .hd { text-align: center; margin-bottom: 44px; }
+    .hd-logo {
+      font-family: var(--fh);
+      font-size: clamp(3rem, 7vw, 5.2rem);
+      letter-spacing: .06em;
+      line-height: 1;
+    }
+    .hd-logo span { color: var(--hi); }
+    .hd-badge {
+      display: inline-block;
+      font-size: .7rem;
+      font-weight: 600;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 14px;
+      margin-top: 10px;
+    }
+
+    /* ── Two-column layout ── */
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+    @media (max-width: 800px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+    .col > * + * { margin-top: 20px; }
+
+    /* ── Card ── */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      padding: 24px;
+      box-shadow: 0 4px 28px rgba(0,0,0,.5);
+    }
+
+    .ct {
+      font-family: var(--fh);
+      font-size: 1.3rem;
+      letter-spacing: .1em;
+      color: var(--hi);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .ct::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Form fields ── */
+    .field { margin-bottom: 14px; }
+    .field:last-child { margin-bottom: 0; }
+
+    label {
+      display: block;
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 5px;
+    }
+
+    input[type=text], input[type=number], select, textarea {
+      width: 100%;
+      background: var(--bg-inp);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      color: var(--text);
+      font-family: var(--fb);
+      font-size: .93rem;
+      padding: 10px 13px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      -webkit-appearance: none; appearance: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--hi);
+      box-shadow: 0 0 0 3px rgba(245,216,0,.1);
+    }
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23666'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 13px center;
+      padding-right: 34px;
+      cursor: pointer;
+    }
+    textarea { resize: vertical; min-height: 80px; line-height: 1.55; }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .field-row .field { margin-bottom: 0; }
+
+    /* ── Toggle / rush fee row ── */
+    .tog-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--bg-inp);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 11px 14px;
+      margin-bottom: 14px;
+      transition: border-color .2s;
+    }
+    .tog-row.on { border-color: rgba(245,216,0,.5); }
+    .tog-info { flex: 1; }
+    .tog-name { font-size: .9rem; font-weight: 500; }
+    .tog-sub  { font-size: .72rem; color: var(--muted); margin-top: 2px; }
+
+    .sw { position: relative; width: 46px; height: 26px; flex-shrink: 0; }
+    .sw input { opacity: 0; width: 0; height: 0; }
+    .trk {
+      position: absolute; inset: 0;
+      background: #2e2e2e;
+      border-radius: 26px;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .trk::before {
+      content: '';
+      position: absolute;
+      width: 20px; height: 20px;
+      left: 3px; top: 3px;
+      background: #555;
+      border-radius: 50%;
+      transition: transform .2s, background .2s;
+    }
+    .sw input:checked ~ .trk              { background: var(--hi); }
+    .sw input:checked ~ .trk::before     { transform: translateX(20px); background: #111; }
+
+    /* ── Divider ── */
+    hr { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
+
+    /* ── Live totals ── */
+    .totals { display: grid; gap: 6px; }
+    .t-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: .85rem;
+      color: var(--muted);
+    }
+    .t-row span:last-child { font-variant-numeric: tabular-nums; }
+    .t-row.grand {
+      padding-top: 10px;
+      margin-top: 4px;
+      border-top: 1px solid var(--border);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--hi);
+    }
+
+    /* ── Quote output box ── */
+    .qout {
+      font-family: 'Courier New', Consolas, monospace;
+      font-size: .79rem;
+      line-height: 1.9;
+      color: var(--text);
+      background: var(--bg-inp);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 16px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      min-height: 320px;
+      transition: border-color .3s;
+    }
+    .qout.live { border-color: rgba(245,216,0,.3); }
+
+    /* ── Buttons ── */
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: var(--r);
+      font-family: var(--fh);
+      font-size: 1.1rem;
+      letter-spacing: .1em;
+      cursor: pointer;
+      transition: background .15s, transform .1s;
+    }
+    .btn-y { background: var(--hi); color: #0c0c0c; }
+    .btn-y:hover  { background: var(--hi-light); }
+    .btn-y:active { transform: scale(.98); }
+    .btn-g { background: var(--green); color: #fff; }
+
+    .copy-msg {
+      text-align: center;
+      font-size: .77rem;
+      color: var(--green);
+      margin-top: 8px;
+      height: 18px;
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    .copy-msg.show { opacity: 1; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: .68rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-top: 52px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <header class="hd">
+    <div class="hd-logo">YOSHII<span>STORE</span></div>
+    <div class="hd-badge">Quote Generator &mdash; Internal Use</div>
+  </header>
+
+  <div class="layout">
+
+    <!-- ═══ LEFT COLUMN: Inputs ═══ -->
+    <div class="col">
+
+      <div class="card">
+        <div class="ct">CUSTOMER INFO</div>
+
+        <div class="field">
+          <label for="n-name">Customer Name</label>
+          <input type="text" id="n-name" placeholder="e.g. Alex Johnson" autocomplete="off" />
+        </div>
+
+        <div class="field">
+          <label for="n-model">Device / Tool Model</label>
+          <input type="text" id="n-model" placeholder="e.g. Milwaukee M18 Drill, ASUS ROG Strix" autocomplete="off" />
+        </div>
+
+        <div class="field">
+          <label for="n-issue">Issue Description</label>
+          <textarea id="n-issue" placeholder="Brief description of the problem..."></textarea>
+        </div>
+
+        <div class="field">
+          <label for="n-cat">Repair Category</label>
+          <select id="n-cat">
+            <option value="">— Select a Category —</option>
+            <option>Motherboard Diagnostics</option>
+            <option>Custom PC Cooling System Repair</option>
+            <option>General Electronics</option>
+            <option>Power Tools</option>
+            <option>Automotive Diagnostic Tools</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="ct">COST CALCULATOR</div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="n-parts">Parts Cost ($)</label>
+            <input type="number" id="n-parts" placeholder="0.00" min="0" step="0.01" />
+          </div>
+          <div class="field">
+            <label for="n-hours">Labor Hours</label>
+            <input type="number" id="n-hours" placeholder="0.0" min="0" step="0.5" />
+          </div>
+        </div>
+
+        <div class="tog-row" id="rush-box">
+          <div class="tog-info">
+            <div class="tog-name">Expedited / Rush Service</div>
+            <div class="tog-sub" id="rush-sub">Adds $40 or 20% of subtotal — whichever is greater</div>
+          </div>
+          <label class="sw">
+            <input type="checkbox" id="n-rush" />
+            <span class="trk"></span>
+          </label>
+        </div>
+
+        <hr />
+
+        <div class="totals">
+          <div class="t-row"><span>Parts</span><span id="tt-parts">$0.00</span></div>
+          <div class="t-row"><span>Labor</span><span id="tt-labor">$0.00</span></div>
+          <div class="t-row" id="tt-rush-row" style="display:none;"><span>Rush Fee</span><span id="tt-rush">$0.00</span></div>
+          <div class="t-row"><span>Sales Tax (IL, 10% on parts)</span><span id="tt-tax">$0.00</span></div>
+          <div class="t-row grand"><span>TOTAL ESTIMATE</span><span id="tt-total">$0.00</span></div>
+        </div>
+      </div>
+
+    </div><!-- /col -->
+
+    <!-- ═══ RIGHT COLUMN: Quote Preview ═══ -->
+    <div class="card">
+      <div class="ct">QUOTE PREVIEW</div>
+
+      <div class="qout" id="qout" role="region" aria-live="polite" aria-label="Generated quote text">Fill in the customer info and costs on the left to generate your quote.</div>
+
+      <hr />
+
+      <button class="btn btn-y" id="copy-btn" onclick="copyQuote()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        COPY TO CLIPBOARD
+      </button>
+      <p class="copy-msg" id="copy-msg">Copied! Ready to send to your customer.</p>
+    </div>
+
+  </div><!-- /layout -->
+
+  <footer>Yoshiistore &mdash; Private Internal Tool &mdash; Not for Distribution</footer>
+</div>
+
+<script>
+  /* ================================================================
+     YOSHIISTORE QUOTE GENERATOR — CONFIGURATION
+     ──────────────────────────────────────────────────────────────
+     Edit these four constants whenever your rates change.
+     No other code needs to be touched.
+  ================================================================ */
+
+  const HOURLY_LABOR_RATE = 65;    // $ per hour
+  const SALES_TAX_RATE    = 0.10;  // Illinois sales tax — applied to parts cost only
+  const RUSH_FEE_FLAT     = 40;    // $ flat minimum rush fee
+  const RUSH_FEE_PERCENT  = 0.20;  // 20% of (parts + labor) — used if greater than flat fee
+
+  /* ──────────────────────────────────────────────────────────────
+     No need to edit below this line.
+  ──────────────────────────────────────────────────────────────── */
+
+  const fmt = n => '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  const el  = id => document.getElementById(id);
+
+  const SVG_COPY = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.
