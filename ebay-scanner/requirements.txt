@@ -1,0 +1,19 @@
+# eBay Console Scanner Bot — Python dependencies
+#
+# Install with:
+#   pip install -r requirements.txt
+#
+# Requires Python 3.10+
+
+# HTTP requests
+requests==2.32.3
+
+# HTML parsing for the scraping fallback
+beautifulsoup4==4.12.3
+lxml==5.2.2           # Faster BS4 parser (optional but recommended)
+
+# .env file loading
+python-dotenv==1.0.1
+
+# Lightweight task scheduler (used by main.py for the scan loop)
+schedule==1.2.2

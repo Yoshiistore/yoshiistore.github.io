@@ -1,0 +1,13 @@
+# Never commit secrets or local state
+.env
+seen_items.db
+*.db
+scanner.log
+*.log
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+venv/
+.venv/
+env/
